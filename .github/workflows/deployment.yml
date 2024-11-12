@@ -25,6 +25,11 @@ jobs:
       - name: Log in to DigitalOcean Container Registry with short-lived credentials
         run: doctl registry login --expiry-seconds 1200
 
+      - name: Delete previous image from DigitalOcean Container Registry
+        run: |
+          IMAGE_TAG=$(echo $GITHUB_SHA | head -c7)
+          doctl registry repository delete-manifest ${{ secrets.DO_REGISTRY_NAME }}/deepface:$IMAGE_TAG --force
+
       - name: Push image to DigitalOcean Container Registry
         run: docker push ${{ secrets.DO_REGISTRY_NAME }}/deepface:$(echo $GITHUB_SHA | head -c7)
 
