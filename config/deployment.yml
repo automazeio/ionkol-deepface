@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deepface
+  labels:
+    app: deepface
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: deepface
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: deepface
+    spec:
+      containers:
+        - name: deepface
+          image: <IMAGE>
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 1000m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: deepface-service
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+  selector:
+    app: deepface
